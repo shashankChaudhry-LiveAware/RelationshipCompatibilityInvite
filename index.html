@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compatibility Assessment | LiveAware</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #f5f5f5; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; min-height: 100vh; }
+
+    .header { text-align: center; padding: 20px 0; }
+    .header h1 { color: #C41E3A; font-size: 28px; }
+    .header p { color: #666; font-size: 14px; margin-top: 5px; }
+
+    .invite-info { background: #E8F4FD; border-radius: 12px; padding: 15px; margin-bottom: 15px; text-align: center; }
+    .invite-info p { color: #1976D2; font-size: 14px; }
+    .invite-note { font-style: italic; color: #555 !important; margin-top: 8px; }
+
+    .progress-section { margin-bottom: 20px; }
+    .progress-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; color: #666; }
+    .progress-bar-bg { height: 6px; background: #E0E0E0; border-radius: 3px; overflow: hidden; }
+    .progress-bar { height: 100%; background: #C41E3A; border-radius: 3px; transition: width 0.3s; }
+
+    .question-card { background: #fff; border-radius: 16px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+    .trait-badge { display: inline-block; background: #E8F4FD; color: #1976D2; padding: 6px 14px; border-radius: 16px; font-size: 12px; font-weight: 600; margin-bottom: 15px; }
+    .question-text { font-size: 18px; font-weight: 700; color: #1E3A5F; line-height: 1.4; margin-bottom: 10px; }
+    .instruction { font-size: 13px; color: #666; margin-bottom: 20px; }
+
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option { display: flex; align-items: flex-start; padding: 14px; background: #F8F9FA; border: 2px solid #E8E8E8; border-radius: 12px; cursor: pointer; text-align: left; transition: all 0.2s; }
+    .option:hover, .option.selected { border-color: #C41E3A; background: #FFF5F5; }
+    .option-num { width: 32px; height: 32px; min-width: 32px; border-radius: 50%; background: #E0E0E0; color: #666; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; margin-right: 12px; }
+    .option.selected .option-num { background: #C41E3A; color: #fff; }
+    .option-content { flex: 1; }
+    .option-label { font-weight: 600; font-size: 14px; color: #333; margin-bottom: 4px; }
+    .option.selected .option-label { color: #C41E3A; }
+    .option-desc { font-size: 12px; color: #666; line-height: 1.4; }
+
+    .nav { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 20px; border-top: 1px solid #E8E8E8; }
+    .btn { padding: 12px 25px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .btn-prev { background: none; color: #666; }
+    .btn-prev:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-next { background: #C41E3A; color: #fff; }
+    .btn-next:hover { background: #A01830; }
+    .btn-submit { background: #22C55E; color: #fff; }
+    .btn-submit:hover { background: #16A34A; }
+    .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+
+    .dots { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
+    .dot { width: 10px; height: 10px; border-radius: 5px; background: #E0E0E0; border: none; cursor: pointer; }
+    .dot.active { width: 24px; background: #C41E3A; }
+    .dot.answered { background: #22C55E; }
+
+    .screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+    .screen-card { background: #fff; border-radius: 16px; padding: 40px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.08); max-width: 400px; }
+    .success-icon { width: 60px; height: 60px; background: #22C55E; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 20px; }
+    .error-title { color: #EF4444; margin-bottom: 15px; }
+    .success-title { color: #22C55E; margin-bottom: 15px; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #E0E0E0; border-top-color: #C41E3A; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="loadingScreen" class="screen">
+  <div class="spinner"></div>
+  <p>Loading...</p>
+</div>
+
+<!-- Error Screen -->
+<div id="errorScreen" class="screen hidden">
+  <div class="screen-card">
+    <h2 class="error-title">Oops!</h2>
+    <p id="errorMessage">You don't have permission to access this form.</p>
+  </div>
+</div>
+
+<!-- Success Screen -->
+<div id="successScreen" class="screen hidden">
+  <div class="screen-card">
+    <div class="success-icon">✓</div>
+    <h2 class="success-title">Thank You!</h2>
+    <p>Your assessment has been submitted successfully.</p>
+    <p style="font-size:13px; color:#666; margin-top:15px;" id="successNote">You can also assess your personality by downloading the LiveAware app:</p>
+    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px;">
+      <a href="https://apps.apple.com/in/app/live-aware/id6744444403" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; background: #000; color: #fff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; transition: background 0.2s;">
+        <span style="font-size: 20px;">🍎</span>
+        <span>Download on App Store</span>
+      </a>
+      <a href="https://play.google.com/store/apps/details?id=com.liveaware&pcampaignid=web_share" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; background: #34A853; color: #fff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; transition: background 0.2s;">
+        <span style="font-size: 20px;">📱</span>
+        <span>Get it on Google Play</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Main Form -->
+<div id="mainForm" class="container hidden">
+  <div class="header">
+    <h1>LiveAware</h1>
+    <p>Compatibility Assessment</p>
+  </div>
+
+  <div id="inviteInfo" class="invite-info">
+    <p><span id="inviterName">Someone</span> invited you to take this personality assessment.</p>
+    <p id="inviteNote" class="invite-note hidden"></p>
+  </div>
+
+  <div class="progress-section">
+    <div class="progress-info">
+      <span>Question <span id="currentNum">1</span> of 8</span>
+      <span><span id="answeredCount">0</span>/8 answered</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div id="progressBar" class="progress-bar" style="width: 12.5%"></div>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div id="traitBadge" class="trait-badge">Structure Preference</div>
+    <h2 id="questionText" class="question-text">How do you prefer to organize your day-to-day life?</h2>
+    <p class="instruction">Select the option that best describes you:</p>
+
+    <div id="optionsContainer" class="options"></div>
+
+    <div class="nav">
+      <button id="prevBtn" class="btn btn-prev" disabled>Previous</button>
+      <button id="nextBtn" class="btn btn-next">Next</button>
+    </div>
+
+    <div id="dotsContainer" class="dots"></div>
+  </div>
+</div>
+
+<script>
+const API_URL = 'https://be.liveaware.in';
+
+// const API_URL = 'http://localhost:8052';
+// 8 Personality Traits
+const TRAITS = [
+  { id: 't1', name: 'Structure Preference', question: 'How do you prefer to organize your day-to-day life?', options: [
+    { value: 1, label: 'Very High Structure', desc: 'I need my days to be well-planned and predictable.' },
+    { value: 2, label: 'High Structure', desc: 'I prefer structure most of the time.' },
+    { value: 3, label: 'Slightly Structured', desc: 'I generally like routine, but can adjust when needed.' },
+    { value: 4, label: 'Balanced / Flexible', desc: "I'm comfortable with a mix of structure and spontaneity." },
+    { value: 5, label: 'Slightly Spontaneous', desc: 'I lean toward unplanned moments and enjoy flexibility.' },
+    { value: 6, label: 'High Spontaneity', desc: 'I usually prefer a free-flowing, flexible schedule.' },
+    { value: 7, label: 'Very High Spontaneity', desc: 'I thrive on unpredictability and love last-minute plans.' }
+  ]},
+  { id: 't2', name: 'Social Energy', question: 'How do you recharge and regain energy?', options: [
+    { value: 1, label: 'Strongly Recharge Alone', desc: 'I regain energy through solitude and quiet time.' },
+    { value: 2, label: 'Usually Recharge Alone', desc: 'I prefer alone time after social or busy days.' },
+    { value: 3, label: 'Lean Toward Alone Time', desc: 'I enjoy people, but recharge best alone.' },
+    { value: 4, label: 'Balanced / Both Work', desc: 'I can recharge alone or with people.' },
+    { value: 5, label: 'Lean Toward People', desc: 'I often feel more energized around others.' },
+    { value: 6, label: 'Usually Recharge With People', desc: 'Social interactions lift my energy most of the time.' },
+    { value: 7, label: 'Strongly Recharge With People', desc: 'I feel most alive when surrounded by people.' }
+  ]},
+  { id: 't3', name: 'Self-Expression Style', question: 'How do you naturally express your thoughts and feelings?', options: [
+    { value: 1, label: 'Very Reserved', desc: 'I prefer thinking things through before speaking.' },
+    { value: 2, label: 'Usually Reserved', desc: 'I speak after reflection and choose my words carefully.' },
+    { value: 3, label: 'Slightly Reserved', desc: 'I share openly but still think before speaking.' },
+    { value: 4, label: 'Balanced Expression', desc: 'I express myself freely when needed and reflect when needed.' },
+    { value: 5, label: 'Slightly Expressive', desc: 'I tend to speak my thoughts without overthinking.' },
+    { value: 6, label: 'Usually Expressive', desc: 'I express freely and naturally in most situations.' },
+    { value: 7, label: 'Very Expressive', desc: 'I openly share my thoughts without hesitation.' }
+  ]},
+  { id: 't4', name: 'Risk Tolerance', question: 'How do you feel about taking risks or trying new things?', options: [
+    { value: 1, label: 'Strongly Avoid Risks', desc: 'I prefer safety and sticking to what I know.' },
+    { value: 2, label: 'Usually Avoid Risks', desc: 'I take risks only when absolutely necessary.' },
+    { value: 3, label: 'Slightly Cautious', desc: "I'm generally careful, but open to low-risk opportunities." },
+    { value: 4, label: 'Moderate', desc: 'I take risks sometimes and avoid them other times.' },
+    { value: 5, label: 'Slightly Risk-Taking', desc: 'I enjoy calculated risks and new experiences.' },
+    { value: 6, label: 'Usually Risk-Taking', desc: "I'm comfortable stepping out of my comfort zone." },
+    { value: 7, label: 'Strongly Embrace Risks', desc: 'I feel excited by uncertainty and bold choices.' }
+  ]},
+  { id: 't5', name: 'Pace of Life', question: 'What pace feels most natural to you?', options: [
+    { value: 1, label: 'Very Slow & Reflective', desc: 'I prefer a calm, unhurried pace in life.' },
+    { value: 2, label: 'Usually Slow-Paced', desc: 'I like moving steadily without pressure.' },
+    { value: 3, label: 'Slightly Slow', desc: 'I appreciate a gentle pace but can go faster when needed.' },
+    { value: 4, label: 'Moderate / Balanced', desc: "My speed adjusts easily depending on what's required." },
+    { value: 5, label: 'Slightly Fast-Paced', desc: 'I like moving quickly and keeping things active.' },
+    { value: 6, label: 'Usually Fast-Paced', desc: 'I function best when things are moving at high speed.' },
+    { value: 7, label: 'Very Fast', desc: 'I thrive in fast, dynamic environments.' }
+  ]},
+  { id: 't6', name: 'Thought Tempo', question: 'How active is your mind most of the time?', options: [
+    { value: 1, label: 'Very Calm Mind', desc: 'My mind feels quiet and rarely overactive.' },
+    { value: 2, label: 'Usually Calm', desc: 'I think clearly and steadily without mental noise.' },
+    { value: 3, label: 'Slightly Calm', desc: 'I have a steady mind with occasional bursts of activity.' },
+    { value: 4, label: 'Moderate', desc: 'My mind switches between quiet and active.' },
+    { value: 5, label: 'Slightly Active', desc: 'My thoughts move quickly and jump between ideas.' },
+    { value: 6, label: 'Usually Active Mind', desc: 'My mind is busy and constantly processing things.' },
+    { value: 7, label: 'Very Active', desc: 'My mind is always on, racing with thoughts.' }
+  ]},
+  { id: 't7', name: 'Decision Style', question: 'How do you usually make decisions?', options: [
+    { value: 1, label: 'Strongly Logical', desc: 'I rely on facts and analysis above all else.' },
+    { value: 2, label: 'Usually Logical', desc: 'I think things through rationally before deciding.' },
+    { value: 3, label: 'Lean Toward Logic', desc: 'I prefer logic but still consider emotions.' },
+    { value: 4, label: 'Balanced', desc: 'I use both intuition and logic depending on the situation.' },
+    { value: 5, label: 'Lean Toward Intuition', desc: 'I often go with what feels right.' },
+    { value: 6, label: 'Usually Intuitive', desc: 'I trust my instincts more than detailed analysis.' },
+    { value: 7, label: 'Strongly Intuitive', desc: 'I make decisions based on gut feeling.' }
+  ]},
+  { id: 't8', name: 'Social Preference', question: 'What type of social interaction feels most comfortable?', options: [
+    { value: 1, label: 'Strongly Prefer 1:1', desc: 'I connect deepest in one-on-one settings.' },
+    { value: 2, label: 'Usually Prefer 1:1', desc: 'I feel more natural in small, intimate conversations.' },
+    { value: 3, label: 'Lean Toward 1:1', desc: 'I enjoy groups but am most myself with one person.' },
+    { value: 4, label: 'Comfortable With Both', desc: 'I enjoy both intimate and group settings equally.' },
+    { value: 5, label: 'Lean Toward Groups', desc: 'I like group dynamics more than one-on-one.' },
+    { value: 6, label: 'Usually Prefer Groups', desc: 'I feel energized in group settings.' },
+    { value: 7, label: 'Strongly Prefer Groups', desc: 'I thrive in lively group environments.' }
+  ]}
+];
+
+// State
+let currentIndex = 0;
+let answers = { t1: null, t2: null, t3: null, t4: null, t5: null, t6: null, t7: null, t8: null };
+let inviteId = null;
+let inviteData = null;
+
+// Get ID from URL (like feedback form uses ?id=xxx)
+function getIdFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('id');
+}
+
+// Show screen
+function showScreen(screenId) {
+  document.getElementById('loadingScreen').classList.add('hidden');
+  document.getElementById('errorScreen').classList.add('hidden');
+  document.getElementById('successScreen').classList.add('hidden');
+  document.getElementById('mainForm').classList.add('hidden');
+  document.getElementById(screenId).classList.remove('hidden');
+}
+
+// Show error
+function showError(message) {
+  document.getElementById('errorMessage').textContent = message;
+  showScreen('errorScreen');
+}
+
+// Load invite data from backend
+async function loadInviteData() {
+  inviteId = getIdFromURL();
+
+  if (!inviteId) {
+    showError("You don't have permission to access this form.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/api/v1/compatibility/get-invite`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: inviteId })
+    });
+
+    const data = await response.json();
+
+    if (!data.error && data.data) {
+      inviteData = data.data;
+
+      // Check if already completed
+      if (inviteData.status === 'completed') {
+        showError('This assessment has already been completed.');
+        return;
+      }
+
+      // Show inviter name
+      document.getElementById('inviterName').textContent = inviteData.userName || 'Someone';
+
+      // Show note if exists
+      if (inviteData.note) {
+        document.getElementById('inviteNote').textContent = '"' + inviteData.note + '"';
+        document.getElementById('inviteNote').classList.remove('hidden');
+      }
+
+      showScreen('mainForm');
+      renderQuestion();
+      renderDots();
+    } else {
+      showError("You don't have permission to access this form.");
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    showError("Unable to load form. Please try again later.");
+  }
+}
+
+// Render current question
+function renderQuestion() {
+  const trait = TRAITS[currentIndex];
+  document.getElementById('traitBadge').textContent = trait.name;
+  document.getElementById('questionText').textContent = trait.question;
+  document.getElementById('currentNum').textContent = currentIndex + 1;
+  document.getElementById('progressBar').style.width = ((currentIndex + 1) / 8 * 100) + '%';
+
+  const answeredCount = Object.values(answers).filter(v => v !== null).length;
+  document.getElementById('answeredCount').textContent = answeredCount;
+
+  // Render options
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+
+  trait.options.forEach(opt => {
+    const div = document.createElement('div');
+    div.className = 'option' + (answers[trait.id] === opt.value ? ' selected' : '');
+    div.innerHTML = `
+      <div class="option-num">${opt.value}</div>
+      <div class="option-content">
+        <div class="option-label">${opt.label}</div>
+        <div class="option-desc">${opt.desc}</div>
+      </div>
+    `;
+    div.onclick = () => selectOption(opt.value);
+    container.appendChild(div);
+  });
+
+  // Update buttons
+  document.getElementById('prevBtn').disabled = currentIndex === 0;
+
+  const nextBtn = document.getElementById('nextBtn');
+  if (currentIndex === 7) {
+    nextBtn.textContent = 'Submit';
+    nextBtn.className = 'btn btn-submit';
+    nextBtn.onclick = submitForm;
+  } else {
+    nextBtn.textContent = 'Next';
+    nextBtn.className = 'btn btn-next';
+    nextBtn.onclick = goNext;
+  }
+
+  updateDots();
+}
+
+// Render dots
+function renderDots() {
+  const container = document.getElementById('dotsContainer');
+  container.innerHTML = '';
+  for (let i = 0; i < 8; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'dot';
+    dot.onclick = () => goToQuestion(i);
+    container.appendChild(dot);
+  }
+  updateDots();
+}
+
+// Update dots
+function updateDots() {
+  const dots = document.querySelectorAll('.dot');
+  dots.forEach((dot, i) => {
+    dot.className = 'dot';
+    if (i === currentIndex) dot.classList.add('active');
+    if (answers[TRAITS[i].id] !== null) dot.classList.add('answered');
+  });
+}
+
+// Select option
+function selectOption(value) {
+  answers[TRAITS[currentIndex].id] = value;
+  renderQuestion();
+}
+
+// Navigation
+function goPrev() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    renderQuestion();
+  }
+}
+
+function goNext() {
+  if (answers[TRAITS[currentIndex].id] === null) {
+    alert('Please select an option before continuing.');
+    return;
+  }
+  if (currentIndex < 7) {
+    currentIndex++;
+    renderQuestion();
+  }
+}
+
+function goToQuestion(index) {
+  currentIndex = index;
+  renderQuestion();
+}
+
+// Submit form to backend
+async function submitForm() {
+  const unanswered = Object.values(answers).filter(v => v === null);
+  if (unanswered.length > 0) {
+    alert('Please answer all 8 questions before submitting.');
+    return;
+  }
+
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.disabled = true;
+  nextBtn.textContent = 'Submitting...';
+
+  try {
+    const response = await fetch(`${API_URL}/api/v1/compatibility/submit-partner`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: inviteId,
+        answers: answers
+      })
+    });
+
+    const data = await response.json();
+
+    if (!data.error) {
+      showScreen('successScreen');
+    } else {
+      alert(data.message || 'Failed to submit. Please try again.');
+      nextBtn.disabled = false;
+      nextBtn.textContent = 'Submit';
+    }
+  } catch (err) {
+    console.error('Submit error:', err);
+    alert('Failed to submit. Please check your connection and try again.');
+    nextBtn.disabled = false;
+    nextBtn.textContent = 'Submit';
+  }
+}
+
+// Event listeners
+document.getElementById('prevBtn').onclick = goPrev;
+
+// Initialize - load data from backend
+loadInviteData();
+</script>
+
+</body>
+</html>
