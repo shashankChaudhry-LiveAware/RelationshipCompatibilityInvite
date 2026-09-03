@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/",
+      "has": [{ "type": "query", "key": "id" }],
+      "destination": "https://www.liveaware.in/compatibility",
+      "permanent": false
+    },
+    {
+      "source": "/(.*)",
+      "destination": "https://www.liveaware.in/compatibility",
+      "permanent": false
+    }
+  ]
+}
