@@ -1,43 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Compatibility Assessment | LiveAware</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', sans-serif; background: #f5f5f5; color: #333; }
     .container { max-width: 600px; margin: 0 auto; padding: 20px; min-height: 100vh; }
-
     .header { text-align: center; padding: 20px 0; }
     .header h1 { color: #C41E3A; font-size: 28px; }
     .header p { color: #666; font-size: 14px; margin-top: 5px; }
-
     .invite-info { background: #E8F4FD; border-radius: 12px; padding: 15px; margin-bottom: 15px; text-align: center; }
     .invite-info p { color: #1976D2; font-size: 14px; }
     .invite-note { font-style: italic; color: #555 !important; margin-top: 8px; }
-
     .progress-section { margin-bottom: 20px; }
     .progress-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; color: #666; }
     .progress-bar-bg { height: 6px; background: #E0E0E0; border-radius: 3px; overflow: hidden; }
     .progress-bar { height: 100%; background: #C41E3A; border-radius: 3px; transition: width 0.3s; }
-
     .question-card { background: #fff; border-radius: 16px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
     .trait-badge { display: inline-block; background: #E8F4FD; color: #1976D2; padding: 6px 14px; border-radius: 16px; font-size: 12px; font-weight: 600; margin-bottom: 15px; }
     .question-text { font-size: 18px; font-weight: 700; color: #1E3A5F; line-height: 1.4; margin-bottom: 10px; }
     .instruction { font-size: 13px; color: #666; margin-bottom: 20px; }
-
+    .anchors { display: flex; justify-content: space-between; gap: 12px; font-size: 11px; color: #94a3b8; margin-bottom: 12px; }
     .options { display: flex; flex-direction: column; gap: 10px; }
     .option { display: flex; align-items: flex-start; padding: 14px; background: #F8F9FA; border: 2px solid #E8E8E8; border-radius: 12px; cursor: pointer; text-align: left; transition: all 0.2s; }
     .option:hover, .option.selected { border-color: #C41E3A; background: #FFF5F5; }
     .option-num { width: 32px; height: 32px; min-width: 32px; border-radius: 50%; background: #E0E0E0; color: #666; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; margin-right: 12px; }
     .option.selected .option-num { background: #C41E3A; color: #fff; }
     .option-content { flex: 1; }
-    .option-label { font-weight: 600; font-size: 14px; color: #333; margin-bottom: 4px; }
+    .option-label { font-weight: 600; font-size: 14px; color: #333; }
     .option.selected .option-label { color: #C41E3A; }
-    .option-desc { font-size: 12px; color: #666; line-height: 1.4; }
-
     .nav { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 20px; border-top: 1px solid #E8E8E8; }
     .btn { padding: 12px 25px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
     .btn-prev { background: none; color: #666; }
@@ -47,12 +42,6 @@
     .btn-submit { background: #22C55E; color: #fff; }
     .btn-submit:hover { background: #16A34A; }
     .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
-
-    .dots { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
-    .dot { width: 10px; height: 10px; border-radius: 5px; background: #E0E0E0; border: none; cursor: pointer; }
-    .dot.active { width: 24px; background: #C41E3A; }
-    .dot.answered { background: #22C55E; }
-
     .screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
     .screen-card { background: #fff; border-radius: 16px; padding: 40px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.08); max-width: 400px; }
     .success-icon { width: 60px; height: 60px; background: #22C55E; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 20px; }
@@ -60,273 +49,157 @@
     .success-title { color: #22C55E; margin-bottom: 15px; }
     .spinner { width: 40px; height: 40px; border: 4px solid #E0E0E0; border-top-color: #C41E3A; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .hidden { display: none !important; }
+    .store-links { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .store-links a { text-decoration: none; color: #C41E3A; font-weight: 600; font-size: 14px; }
   </style>
 </head>
 <body>
-
-<!-- Loading Screen -->
-<div id="loadingScreen" class="screen">
-  <div class="spinner"></div>
-  <p>Loading...</p>
-</div>
-
-<!-- Error Screen -->
-<div id="errorScreen" class="screen hidden">
-  <div class="screen-card">
-    <h2 class="error-title">Oops!</h2>
-    <p id="errorMessage">You don't have permission to access this form.</p>
-  </div>
-</div>
-
-<!-- Success Screen -->
-<div id="successScreen" class="screen hidden">
-  <div class="screen-card">
-    <div class="success-icon">✓</div>
-    <h2 class="success-title">Thank You!</h2>
-    <p>Your assessment has been submitted successfully.</p>
-    <p style="font-size:13px; color:#666; margin-top:15px;" id="successNote">You can also assess your personality by downloading the LiveAware app:</p>
-    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px;">
-      <a href="https://apps.apple.com/in/app/live-aware/id6744444403" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; background: #000; color: #fff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; transition: background 0.2s;">
-        <span style="font-size: 20px;">🍎</span>
-        <span>Download on App Store</span>
-      </a>
-      <a href="https://play.google.com/store/apps/details?id=com.liveaware&pcampaignid=web_share" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; background: #34A853; color: #fff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; transition: background 0.2s;">
-        <span style="font-size: 20px;">📱</span>
-        <span>Get it on Google Play</span>
-      </a>
-    </div>
-  </div>
-</div>
-
-<!-- Main Form -->
-<div id="mainForm" class="container hidden">
-  <div class="header">
-    <h1>LiveAware</h1>
-    <p>Compatibility Assessment</p>
+  <div id="loadingScreen" class="screen">
+    <div class="spinner"></div>
+    <p>Loading...</p>
   </div>
 
-  <div id="inviteInfo" class="invite-info">
-    <p><span id="inviterName">Someone</span> invited you to take this personality assessment.</p>
-    <p id="inviteNote" class="invite-note hidden"></p>
-  </div>
-
-  <div class="progress-section">
-    <div class="progress-info">
-      <span>Question <span id="currentNum">1</span> of 8</span>
-      <span><span id="answeredCount">0</span>/8 answered</span>
-    </div>
-    <div class="progress-bar-bg">
-      <div id="progressBar" class="progress-bar" style="width: 12.5%"></div>
+  <div id="errorScreen" class="screen hidden">
+    <div class="screen-card">
+      <h2 class="error-title">Oops!</h2>
+      <p id="errorMessage">You don't have permission to access this form.</p>
     </div>
   </div>
 
-  <div class="question-card">
-    <div id="traitBadge" class="trait-badge">Structure Preference</div>
-    <h2 id="questionText" class="question-text">How do you prefer to organize your day-to-day life?</h2>
-    <p class="instruction">Select the option that best describes you:</p>
-
-    <div id="optionsContainer" class="options"></div>
-
-    <div class="nav">
-      <button id="prevBtn" class="btn btn-prev" disabled>Previous</button>
-      <button id="nextBtn" class="btn btn-next">Next</button>
+  <div id="successScreen" class="screen hidden">
+    <div class="screen-card">
+      <div class="success-icon">✓</div>
+      <h2 class="success-title">Thank You!</h2>
+      <p>Your Personality Type assessment has been submitted. Your partner can view relationship alignment in Live Aware.</p>
+      <div class="store-links">
+        <a href="https://apps.apple.com/app/id6474657320" target="_blank" rel="noopener">Download on the App Store</a>
+        <a href="https://play.google.com/store/apps/details?id=com.liveaware" target="_blank" rel="noopener">Get it on Google Play</a>
+      </div>
     </div>
-
-    <div id="dotsContainer" class="dots"></div>
   </div>
-</div>
 
-<script>
+  <div id="mainForm" class="container hidden">
+    <div class="header">
+      <h1>LiveAware</h1>
+      <p>Personality Compatibility Assessment</p>
+    </div>
+    <div class="invite-info">
+      <p><strong id="inviterName">Someone</strong> invited you to complete your Personality Type so you both can see how your types interact.</p>
+      <p id="inviteNote" class="invite-note hidden"></p>
+    </div>
+    <div class="progress-section">
+      <div class="progress-info">
+        <span>Question <span id="currentNum">1</span> of <span id="totalNum">44</span></span>
+        <span><span id="answeredCount">0</span>/<span id="totalAnswered">44</span> answered</span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+    </div>
+    <div class="question-card">
+      <div class="trait-badge" id="traitBadge"></div>
+      <div class="question-text" id="questionText"></div>
+      <div class="instruction">Select the option that best describes you (1–7).</div>
+      <div class="anchors"><span id="leftAnchor"></span><span id="rightAnchor"></span></div>
+      <div class="options" id="optionsContainer"></div>
+      <div class="nav">
+        <button type="button" class="btn btn-prev" id="prevBtn">Previous</button>
+        <button type="button" class="btn btn-next" id="nextBtn">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
 const API_URL = 'https://be.liveaware.in';
+const INVENTORY = {"TRAITS":[{"id":"t1","traitHeading":"T1 — Structure & Flexibility","name":"Structure & Flexibility","leftLabel":"Order & Planning","rightLabel":"Spontaneity & Adaptability"},{"id":"t2","traitHeading":"T2 — Social Energy","name":"Social Energy","leftLabel":"Solitude Recharge","rightLabel":"People Recharge"},{"id":"t3","traitHeading":"T3 — Self-Expression Style","name":"Self-Expression Style","leftLabel":"Reserved Processing","rightLabel":"Open Expression"},{"id":"t4","traitHeading":"T4 — Risk Tolerance","name":"Risk Tolerance","leftLabel":"Security-Oriented","rightLabel":"Opportunity-Oriented"},{"id":"t5","traitHeading":"T5 — Pace of Life","name":"Pace of Life","leftLabel":"Measured Rhythm","rightLabel":"Fast Action"},{"id":"t6","traitHeading":"T6 — Thought Tempo","name":"Thought Tempo","leftLabel":"Deliberate Processing","rightLabel":"Rapid Thinking"},{"id":"t7","traitHeading":"T7 — Decision Style","name":"Decision Style","leftLabel":"Logic-Led","rightLabel":"Intuition-Led"},{"id":"t8","traitHeading":"T8 — Social Preference","name":"Social Preference","leftLabel":"1:1 Depth","rightLabel":"Group Orientation"},{"id":"t9","traitHeading":"T9 — Emotional Regulation","name":"Emotional Regulation","leftLabel":"Reactive","rightLabel":"Stable & Recovering"},{"id":"t10","traitHeading":"T10 — Conscientiousness (Execution Reliability)","name":"Conscientiousness (Execution Reliability)","leftLabel":"Flexible Execution","rightLabel":"Consistent Execution"},{"id":"t11","traitHeading":"T11 — Autonomy Preference","name":"Autonomy Preference","leftLabel":"Guidance & Structure","rightLabel":"Independence & Ownership"}],"QUESTIONS":[{"id":"t1_q1","traitId":"t1","domain":"general","prompt":"Over a typical week, your approach is…","leftAnchor":"Plan everything ahead and follow a clear routine","rightAnchor":"Keep everything open, decide in the moment","options":["Plan everything ahead and follow a clear routine","Plan most things and keep small flexibility","Plan key parts, adjust smaller details","Balance planning and flexibility equally","Keep a loose plan, adapt often","Decide as things unfold, minimal planning","Keep everything open, decide in the moment"]},{"id":"t1_q2","traitId":"t1","domain":"general","prompt":"When plans change unexpectedly, you…","leftAnchor":"Re-plan quickly to restore structure","rightAnchor":"Enjoy change and feel energized by it","options":["Re-plan quickly to restore structure","Try to return to original plan","Adjust, but prefer stability","Adjust based on situation and importance","Adapt without much stress","Shift quickly and stay comfortable","Enjoy change and feel energized by it"]},{"id":"t1_q3","traitId":"t1","domain":"general","prompt":"In daily life, you function best with…","leftAnchor":"Clear systems, routines, and defined structure","rightAnchor":"No fixed systems, complete freedom","options":["Clear systems, routines, and defined structure","Mostly structured with limited flexibility","Structured core with some flexibility","Equal mix of structure and freedom","Flexible system with light structure","Minimal systems, mostly adaptive","No fixed systems, complete freedom"]},{"id":"t1_q4","traitId":"t1","domain":"general","prompt":"Your natural planning horizon is…","leftAnchor":"Plan far ahead with clear timelines","rightAnchor":"Focus on the present, decide as needed","options":["Plan far ahead with clear timelines","Prefer long-term direction and clarity","Think ahead while staying flexible","Balance short-term and long-term focus","Focus mostly on near-term adjustments","Rarely plan far ahead","Focus on the present, decide as needed"]},{"id":"t2_q1","traitId":"t2","domain":"general","prompt":"After a demanding day, you recharge best by…","leftAnchor":"Spending quiet time alone","rightAnchor":"Being around people and interaction","options":["Spending quiet time alone","Being alone with minimal interaction","Having some space before reconnecting","Mixing alone time and social time equally","Being around a few people","Spending time in active social settings","Being around people and interaction"]},{"id":"t2_q2","traitId":"t2","domain":"general","prompt":"In extended social situations, your energy…","leftAnchor":"Drops quickly; I need to step away","rightAnchor":"Increases the longer it continues","options":["Drops quickly; I need to step away","Gradually drains over time","Slightly decreases but manageable","Depends on people and environment","Slightly increases over time","Builds as interaction continues","Increases the longer it continues"]},{"id":"t2_q3","traitId":"t2","domain":"general","prompt":"When something exciting happens, you…","leftAnchor":"Process it privately before sharing","rightAnchor":"Immediately share and involve others","options":["Process it privately before sharing","Share with one trusted person","Reflect briefly, then share selectively","Share depending on situation","Share fairly soon with others","Naturally tell multiple people","Immediately share and involve others"]},{"id":"t2_q4","traitId":"t2","domain":"general","prompt":"Too much time alone makes you feel…","leftAnchor":"Fully comfortable and restored","rightAnchor":"Disconnected without people","options":["Fully comfortable and restored","Mostly calm and content","Slightly comfortable","Neutral—can go either way","Slightly restless","Restless and seeking interaction","Disconnected without people"]},{"id":"t3_q1","traitId":"t3","domain":"general","prompt":"When something is on your mind, you…","leftAnchor":"Process internally before speaking","rightAnchor":"Speak immediately to process thoughts","options":["Process internally before speaking","Think privately, then share selectively","Reflect first, then express","Sometimes process internally, sometimes externally","Start sharing while still processing","Express openly as thoughts form","Speak immediately to process thoughts"]},{"id":"t3_q2","traitId":"t3","domain":"general","prompt":"In conversations, you tend to…","leftAnchor":"Listen first, speak after forming thoughts","rightAnchor":"Speak quickly as thoughts arrive","options":["Listen first, speak after forming thoughts","Speak selectively after understanding","Pause briefly before responding","Adjust based on topic and comfort","Speak fairly often while thinking","Express while forming ideas","Speak quickly as thoughts arrive"]},{"id":"t3_q3","traitId":"t3","domain":"general","prompt":"When emotionally affected, you usually…","leftAnchor":"Go quiet and process internally","rightAnchor":"Express immediately without holding back","options":["Go quiet and process internally","Take space, then share later","Need time, then express partially","Adjust based on safety and situation","Express fairly soon with some pauses","Share quickly and openly","Express immediately without holding back"]},{"id":"t3_q4","traitId":"t3","domain":"general","prompt":"When explaining something, your style is…","leftAnchor":"Concise and to the point","rightAnchor":"Highly expressive with rich detail","options":["Concise and to the point","Brief with minimal detail","Mostly concise with some detail","Adjust based on audience","Fairly detailed but structured","Expressive with context and detail","Highly expressive with rich detail"]},{"id":"t4_q1","traitId":"t4","domain":"general","prompt":"When facing uncertain opportunities, you…","leftAnchor":"Wait for clarity before taking action","rightAnchor":"Move quickly and learn through action","options":["Wait for clarity before taking action","Prefer safety and predictable outcomes","Take small, cautious steps forward","Weigh risk and reward before acting","Move forward if upside feels meaningful","Act despite uncertainty and adjust later","Move quickly and learn through action"]},{"id":"t4_q2","traitId":"t4","domain":"general","prompt":"You feel most engaged when…","leftAnchor":"Everything is stable and predictable","rightAnchor":"In high-uncertainty, high-growth environments","options":["Everything is stable and predictable","Mostly secure with limited uncertainty","Slightly challenged but stable","Balanced between stability and challenge","Facing some uncertainty and growth","Exploring new and uncertain situations","In high-uncertainty, high-growth environments"]},{"id":"t4_q3","traitId":"t4","domain":"general","prompt":"In major decisions, you tend to…","leftAnchor":"Protect what is already secure","rightAnchor":"Act quickly when upside is strong","options":["Protect what is already secure","Prioritize stability over change","Take cautious, low-risk steps","Balance safety and opportunity","Take calculated risks for growth","Lean toward bold opportunities","Act quickly when upside is strong"]},{"id":"t4_q4","traitId":"t4","domain":"general","prompt":"When failure is possible, you usually…","leftAnchor":"Avoid risk unless absolutely necessary","rightAnchor":"Embrace risk as part of progress","options":["Avoid risk unless absolutely necessary","Choose safer options to reduce loss","Take limited risk with safeguards","Balance potential loss and gain","Accept some risk for meaningful upside","Take risks to pursue strong outcomes","Embrace risk as part of progress"]},{"id":"t5_q1","traitId":"t5","domain":"general","prompt":"Your natural pace in most weeks is…","leftAnchor":"Slow, steady, and unhurried","rightAnchor":"Very fast, high-energy, constantly moving","options":["Slow, steady, and unhurried","Mostly calm with low urgency","Steady with occasional bursts of speed","Balanced between calm and fast","Generally fast with some slow periods","Fast-paced and active most of the time","Very fast, high-energy, constantly moving"]},{"id":"t5_q2","traitId":"t5","domain":"general","prompt":"When tasks pile up, you tend to…","leftAnchor":"Work through them calmly over time","rightAnchor":"Speed up sharply and clear everything fast","options":["Work through them calmly over time","Stay steady and avoid rushing","Increase pace slightly","Adjust speed based on priority","Move faster while staying controlled","Work quickly to clear tasks","Speed up sharply and clear everything fast"]},{"id":"t5_q3","traitId":"t5","domain":"general","prompt":"In daily life, you prefer a rhythm that feels…","leftAnchor":"Calm, spacious, and unhurried","rightAnchor":"Constantly moving with high momentum","options":["Calm, spacious, and unhurried","Mostly relaxed with low pressure","Calm with occasional activity","Balanced between calm and active","Active with some recovery time","Highly active and dynamic","Constantly moving with high momentum"]},{"id":"t5_q4","traitId":"t5","domain":"general","prompt":"When you have free time, you usually…","leftAnchor":"Slow down and fully recharge","rightAnchor":"Avoid idleness and stay constantly engaged","options":["Slow down and fully recharge","Rest intentionally and recover","Mostly relax with some activity","Choose rest or activity based on mood","Stay active but include recovery","Fill time with activity or projects","Avoid idleness and stay constantly engaged"]},{"id":"t6_q1","traitId":"t6","domain":"general","prompt":"Your mind during a typical day feels…","leftAnchor":"Quiet, focused on one thing at a time","rightAnchor":"Fast and constantly moving between ideas","options":["Quiet, focused on one thing at a time","Mostly calm with steady focus","Calm with occasional thought bursts","Balanced between calm and active","Active with frequent idea shifts","Busy with many thoughts at once","Fast and constantly moving between ideas"]},{"id":"t6_q2","traitId":"t6","domain":"general","prompt":"When processing new information, you…","leftAnchor":"Take time to analyze step by step","rightAnchor":"Understand instantly and move on","options":["Take time to analyze step by step","Prefer steady and thoughtful processing","Process carefully but not slowly","Adjust speed based on complexity","Process fairly quickly","Interpret quickly and respond fast","Understand instantly and move on"]},{"id":"t6_q3","traitId":"t6","domain":"general","prompt":"In conversations, you tend to…","leftAnchor":"Pause and think before responding","rightAnchor":"Speak as thoughts arrive instantly","options":["Pause and think before responding","Take a moment, then reply carefully","Respond after brief reflection","Adjust speed based on topic","Respond quickly","Think while speaking","Speak as thoughts arrive instantly"]},{"id":"t6_q4","traitId":"t6","domain":"general","prompt":"Under pressure, your thinking becomes…","leftAnchor":"Narrow and highly focused","rightAnchor":"Rapid and constantly shifting","options":["Narrow and highly focused","More controlled and steady","Slightly more focused","Changes depending on situation","More active with extra thoughts","Fast and mentally busy","Rapid and constantly shifting"]},{"id":"t7_q1","traitId":"t7","domain":"general","prompt":"When making decisions, you rely more on…","leftAnchor":"Logic, data, and structured analysis","rightAnchor":"Strong gut feeling without needing logic","options":["Logic, data, and structured analysis","Reasoning and objective thinking","Mostly logic with some intuition","Equal mix of logic and intuition","Intuition with some reasoning","Inner instinct over detailed analysis","Strong gut feeling without needing logic"]},{"id":"t7_q2","traitId":"t7","domain":"general","prompt":"When choices are unclear, you…","leftAnchor":"Gather more data before deciding","rightAnchor":"Act on intuition immediately","options":["Gather more data before deciding","Seek clarity through analysis","Use logic, then decide","Balance analysis and instinct","Decide, then validate with reasoning","Trust instinct and adjust later","Act on intuition immediately"]},{"id":"t7_q3","traitId":"t7","domain":"general","prompt":"When something feels right but lacks logic, you…","leftAnchor":"Reject it and rely on facts","rightAnchor":"Act on it without justification","options":["Reject it and rely on facts","Strongly question it","Remain cautious about it","Weigh both feeling and logic","Consider it seriously","Trust it often","Act on it without justification"]},{"id":"t7_q4","traitId":"t7","domain":"general","prompt":"When choosing between options, you prefer what…","leftAnchor":"Is rational and clearly justified","rightAnchor":"Feels right regardless of logic","options":["Is rational and clearly justified","Makes logical sense","Is practical and reasoned","Balances logic and meaning","Feels aligned and meaningful","Resonates internally","Feels right regardless of logic"]},{"id":"t8_q1","traitId":"t8","domain":"general","prompt":"Socially, you feel most like yourself in…","leftAnchor":"Deep one-on-one conversations","rightAnchor":"Large, energetic social environments","options":["Deep one-on-one conversations","Small, meaningful interactions","Small groups with some depth","Comfortable in both small and group settings","Group interactions with some depth","Larger, active social groups","Large, energetic social environments"]},{"id":"t8_q2","traitId":"t8","domain":"general","prompt":"At social gatherings, you usually…","leftAnchor":"Stay in one meaningful conversation","rightAnchor":"Thrive in high-energy group settings","options":["Stay in one meaningful conversation","Stick with a small circle","Move slowly between a few people","Balance depth and group interaction","Engage with multiple people","Move easily within group dynamics","Thrive in high-energy group settings"]},{"id":"t8_q3","traitId":"t8","domain":"general","prompt":"Connection feels strongest when…","leftAnchor":"One person deeply understands me","rightAnchor":"Collective energy and shared moments","options":["One person deeply understands me","Conversations feel personal and meaningful","Depth matters more than group size","Both depth and shared experience matter","Shared experiences with several people","Strong sense of group belonging","Collective energy and shared moments"]},{"id":"t8_q4","traitId":"t8","domain":"general","prompt":"When meeting new people, you…","leftAnchor":"Focus on deeper connection with a few","rightAnchor":"Easily connect with many and enjoy variety","options":["Focus on deeper connection with a few","Prefer fewer, meaningful conversations","Meet some, but focus on select people","Balance meeting many and going deeper","Meet many, then choose a few to deepen","Enjoy interacting with many people","Easily connect with many and enjoy variety"]},{"id":"t9_q1","traitId":"t9","domain":"general","prompt":"In stressful situations, your immediate reaction is…","leftAnchor":"Strong and hard to control","rightAnchor":"Steady and composed","options":["Strong and hard to control","Intense and quickly activated","Noticeable but manageable","Varies depending on situation","Controlled with some emotional impact","Calm and aware","Steady and composed"]},{"id":"t9_q2","traitId":"t9","domain":"general","prompt":"In emotionally intense moments, you…","leftAnchor":"React quickly and strongly","rightAnchor":"Stay highly steady and controlled","options":["React quickly and strongly","Feel overwhelmed in the moment","Experience noticeable emotional spikes","Adjust based on context","Stay fairly composed","Remain calm and aware","Stay highly steady and controlled"]},{"id":"t9_q3","traitId":"t9","domain":"general","prompt":"After setbacks or stress, you usually…","leftAnchor":"Stay affected for a long time","rightAnchor":"Return to clarity with little residue","options":["Stay affected for a long time","Carry emotional impact for days","Take time to recover","Recover depending on situation","Reset fairly quickly","Regain balance quickly","Return to clarity with little residue"]},{"id":"t9_q4","traitId":"t9","domain":"general","prompt":"After criticism or conflict, you…","leftAnchor":"Stay mentally stuck for long","rightAnchor":"Let go quickly and move on","options":["Stay mentally stuck for long","Feel affected deeply","Need time to reset","Process at a moderate pace","Move forward after reflection","Recover quickly and refocus","Let go quickly and move on"]},{"id":"t10_q1","traitId":"t10","domain":"general","prompt":"When working on important but uninteresting tasks…","leftAnchor":"Avoid or delay them","rightAnchor":"Complete regardless of motivation","options":["Avoid or delay them","Often postpone them","Struggle but eventually complete them","Complete based on importance","Usually complete them on time","Consistently follow through","Complete regardless of motivation"]},{"id":"t10_q2","traitId":"t10","domain":"general","prompt":"When no one is monitoring your work, you…","leftAnchor":"Lose focus or delay tasks","rightAnchor":"Maintain full discipline independently","options":["Lose focus or delay tasks","Work inconsistently","Stay somewhat accountable","Maintain moderate discipline","Stay mostly responsible","Remain disciplined and focused","Maintain full discipline independently"]},{"id":"t10_q3","traitId":"t10","domain":"general","prompt":"Long-term commitments are usually…","leftAnchor":"Strong start, weak follow-through","rightAnchor":"Consistent from start to finish","options":["Strong start, weak follow-through","Difficult to sustain","Inconsistent over time","Maintained with some variation","Fairly consistent","Strong and reliable","Consistent from start to finish"]},{"id":"t10_q4","traitId":"t10","domain":"general","prompt":"Systems like habits and deadlines feel…","leftAnchor":"Restrictive and easy to ignore","rightAnchor":"Essential for execution","options":["Restrictive and easy to ignore","Difficult to maintain","Slightly uncomfortable","Useful depending on situation","Helpful for consistency","Strongly supportive","Essential for execution"]},{"id":"t11_q1","traitId":"t11","domain":"general","prompt":"When making important decisions, you…","leftAnchor":"Rely heavily on guidance","rightAnchor":"Take full ownership independently","options":["Rely heavily on guidance","Prefer clear direction from others","Use guidance with some independence","Balance guidance and self-direction","Prefer independence with occasional input","Decide mostly on your own","Take full ownership independently"]},{"id":"t11_q2","traitId":"t11","domain":"general","prompt":"When working with others, you perform best when…","leftAnchor":"Roles and steps are clearly directed","rightAnchor":"Full control over approach and execution","options":["Roles and steps are clearly directed","Mostly guided with defined structure","Some direction with flexibility","Balanced between guidance and freedom","Freedom with occasional alignment","Strong personal ownership","Full control over approach and execution"]},{"id":"t11_q3","traitId":"t11","domain":"general","prompt":"When closely supervised, you tend to…","leftAnchor":"Follow direction closely without deviation","rightAnchor":"Strongly prefer full independence","options":["Follow direction closely without deviation","Prefer staying aligned with guidance","Work within structure with some independence","Adjust based on situation","Prefer some independence within structure","Resist excessive control","Strongly prefer full independence"]},{"id":"t11_q4","traitId":"t11","domain":"general","prompt":"When facing challenges, you usually…","leftAnchor":"Seek help immediately","rightAnchor":"Rely on yourself before seeking help","options":["Seek help immediately","Prefer guidance before acting","Ask for help when needed","Balance self-effort and support","Try solving independently first","Prefer solving on your own","Rely on yourself before seeking help"]}]};
+const TRAITS = INVENTORY.TRAITS;
+const QUESTIONS = INVENTORY.QUESTIONS;
+const TOTAL = QUESTIONS.length;
 
-// const API_URL = 'http://localhost:8052';
-// 8 Personality Traits
-const TRAITS = [
-  { id: 't1', name: 'Structure Preference', question: 'How do you prefer to organize your day-to-day life?', options: [
-    { value: 1, label: 'Very High Structure', desc: 'I need my days to be well-planned and predictable.' },
-    { value: 2, label: 'High Structure', desc: 'I prefer structure most of the time.' },
-    { value: 3, label: 'Slightly Structured', desc: 'I generally like routine, but can adjust when needed.' },
-    { value: 4, label: 'Balanced / Flexible', desc: "I'm comfortable with a mix of structure and spontaneity." },
-    { value: 5, label: 'Slightly Spontaneous', desc: 'I lean toward unplanned moments and enjoy flexibility.' },
-    { value: 6, label: 'High Spontaneity', desc: 'I usually prefer a free-flowing, flexible schedule.' },
-    { value: 7, label: 'Very High Spontaneity', desc: 'I thrive on unpredictability and love last-minute plans.' }
-  ]},
-  { id: 't2', name: 'Social Energy', question: 'How do you recharge and regain energy?', options: [
-    { value: 1, label: 'Strongly Recharge Alone', desc: 'I regain energy through solitude and quiet time.' },
-    { value: 2, label: 'Usually Recharge Alone', desc: 'I prefer alone time after social or busy days.' },
-    { value: 3, label: 'Lean Toward Alone Time', desc: 'I enjoy people, but recharge best alone.' },
-    { value: 4, label: 'Balanced / Both Work', desc: 'I can recharge alone or with people.' },
-    { value: 5, label: 'Lean Toward People', desc: 'I often feel more energized around others.' },
-    { value: 6, label: 'Usually Recharge With People', desc: 'Social interactions lift my energy most of the time.' },
-    { value: 7, label: 'Strongly Recharge With People', desc: 'I feel most alive when surrounded by people.' }
-  ]},
-  { id: 't3', name: 'Self-Expression Style', question: 'How do you naturally express your thoughts and feelings?', options: [
-    { value: 1, label: 'Very Reserved', desc: 'I prefer thinking things through before speaking.' },
-    { value: 2, label: 'Usually Reserved', desc: 'I speak after reflection and choose my words carefully.' },
-    { value: 3, label: 'Slightly Reserved', desc: 'I share openly but still think before speaking.' },
-    { value: 4, label: 'Balanced Expression', desc: 'I express myself freely when needed and reflect when needed.' },
-    { value: 5, label: 'Slightly Expressive', desc: 'I tend to speak my thoughts without overthinking.' },
-    { value: 6, label: 'Usually Expressive', desc: 'I express freely and naturally in most situations.' },
-    { value: 7, label: 'Very Expressive', desc: 'I openly share my thoughts without hesitation.' }
-  ]},
-  { id: 't4', name: 'Risk Tolerance', question: 'How do you feel about taking risks or trying new things?', options: [
-    { value: 1, label: 'Strongly Avoid Risks', desc: 'I prefer safety and sticking to what I know.' },
-    { value: 2, label: 'Usually Avoid Risks', desc: 'I take risks only when absolutely necessary.' },
-    { value: 3, label: 'Slightly Cautious', desc: "I'm generally careful, but open to low-risk opportunities." },
-    { value: 4, label: 'Moderate', desc: 'I take risks sometimes and avoid them other times.' },
-    { value: 5, label: 'Slightly Risk-Taking', desc: 'I enjoy calculated risks and new experiences.' },
-    { value: 6, label: 'Usually Risk-Taking', desc: "I'm comfortable stepping out of my comfort zone." },
-    { value: 7, label: 'Strongly Embrace Risks', desc: 'I feel excited by uncertainty and bold choices.' }
-  ]},
-  { id: 't5', name: 'Pace of Life', question: 'What pace feels most natural to you?', options: [
-    { value: 1, label: 'Very Slow & Reflective', desc: 'I prefer a calm, unhurried pace in life.' },
-    { value: 2, label: 'Usually Slow-Paced', desc: 'I like moving steadily without pressure.' },
-    { value: 3, label: 'Slightly Slow', desc: 'I appreciate a gentle pace but can go faster when needed.' },
-    { value: 4, label: 'Moderate / Balanced', desc: "My speed adjusts easily depending on what's required." },
-    { value: 5, label: 'Slightly Fast-Paced', desc: 'I like moving quickly and keeping things active.' },
-    { value: 6, label: 'Usually Fast-Paced', desc: 'I function best when things are moving at high speed.' },
-    { value: 7, label: 'Very Fast', desc: 'I thrive in fast, dynamic environments.' }
-  ]},
-  { id: 't6', name: 'Thought Tempo', question: 'How active is your mind most of the time?', options: [
-    { value: 1, label: 'Very Calm Mind', desc: 'My mind feels quiet and rarely overactive.' },
-    { value: 2, label: 'Usually Calm', desc: 'I think clearly and steadily without mental noise.' },
-    { value: 3, label: 'Slightly Calm', desc: 'I have a steady mind with occasional bursts of activity.' },
-    { value: 4, label: 'Moderate', desc: 'My mind switches between quiet and active.' },
-    { value: 5, label: 'Slightly Active', desc: 'My thoughts move quickly and jump between ideas.' },
-    { value: 6, label: 'Usually Active Mind', desc: 'My mind is busy and constantly processing things.' },
-    { value: 7, label: 'Very Active', desc: 'My mind is always on, racing with thoughts.' }
-  ]},
-  { id: 't7', name: 'Decision Style', question: 'How do you usually make decisions?', options: [
-    { value: 1, label: 'Strongly Logical', desc: 'I rely on facts and analysis above all else.' },
-    { value: 2, label: 'Usually Logical', desc: 'I think things through rationally before deciding.' },
-    { value: 3, label: 'Lean Toward Logic', desc: 'I prefer logic but still consider emotions.' },
-    { value: 4, label: 'Balanced', desc: 'I use both intuition and logic depending on the situation.' },
-    { value: 5, label: 'Lean Toward Intuition', desc: 'I often go with what feels right.' },
-    { value: 6, label: 'Usually Intuitive', desc: 'I trust my instincts more than detailed analysis.' },
-    { value: 7, label: 'Strongly Intuitive', desc: 'I make decisions based on gut feeling.' }
-  ]},
-  { id: 't8', name: 'Social Preference', question: 'What type of social interaction feels most comfortable?', options: [
-    { value: 1, label: 'Strongly Prefer 1:1', desc: 'I connect deepest in one-on-one settings.' },
-    { value: 2, label: 'Usually Prefer 1:1', desc: 'I feel more natural in small, intimate conversations.' },
-    { value: 3, label: 'Lean Toward 1:1', desc: 'I enjoy groups but am most myself with one person.' },
-    { value: 4, label: 'Comfortable With Both', desc: 'I enjoy both intimate and group settings equally.' },
-    { value: 5, label: 'Lean Toward Groups', desc: 'I like group dynamics more than one-on-one.' },
-    { value: 6, label: 'Usually Prefer Groups', desc: 'I feel energized in group settings.' },
-    { value: 7, label: 'Strongly Prefer Groups', desc: 'I thrive in lively group environments.' }
-  ]}
-];
-
-// State
 let currentIndex = 0;
-let answers = { t1: null, t2: null, t3: null, t4: null, t5: null, t6: null, t7: null, t8: null };
+let answers = {};
+QUESTIONS.forEach((q) => { answers[q.id] = null; });
 let inviteId = null;
 let inviteData = null;
 
-// Get ID from URL (like feedback form uses ?id=xxx)
 function getIdFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('id');
+  return new URLSearchParams(window.location.search).get('id');
 }
 
-// Show screen
 function showScreen(screenId) {
-  document.getElementById('loadingScreen').classList.add('hidden');
-  document.getElementById('errorScreen').classList.add('hidden');
-  document.getElementById('successScreen').classList.add('hidden');
-  document.getElementById('mainForm').classList.add('hidden');
+  ['loadingScreen', 'errorScreen', 'successScreen', 'mainForm'].forEach((id) => {
+    document.getElementById(id).classList.add('hidden');
+  });
   document.getElementById(screenId).classList.remove('hidden');
 }
 
-// Show error
 function showError(message) {
   document.getElementById('errorMessage').textContent = message;
   showScreen('errorScreen');
 }
 
-// Load invite data from backend
 async function loadInviteData() {
   inviteId = getIdFromURL();
-
   if (!inviteId) {
     showError("You don't have permission to access this form.");
     return;
   }
-
   try {
-    const response = await fetch(`${API_URL}/api/v1/compatibility/get-invite`, {
+    const response = await fetch(API_URL + '/api/v1/compatibility/get-invite', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: inviteId })
     });
-
     const data = await response.json();
-
     if (!data.error && data.data) {
       inviteData = data.data;
-
-      // Check if already completed
       if (inviteData.status === 'completed') {
         showError('This assessment has already been completed.');
         return;
       }
-
-      // Show inviter name
       document.getElementById('inviterName').textContent = inviteData.userName || 'Someone';
-
-      // Show note if exists
       if (inviteData.note) {
         document.getElementById('inviteNote').textContent = '"' + inviteData.note + '"';
         document.getElementById('inviteNote').classList.remove('hidden');
       }
-
+      document.getElementById('totalNum').textContent = String(TOTAL);
+      document.getElementById('totalAnswered').textContent = String(TOTAL);
       showScreen('mainForm');
       renderQuestion();
-      renderDots();
     } else {
       showError("You don't have permission to access this form.");
     }
   } catch (err) {
     console.error('Load error:', err);
-    showError("Unable to load form. Please try again later.");
+    showError('Unable to load form. Please try again later.');
   }
 }
 
-// Render current question
 function renderQuestion() {
-  const trait = TRAITS[currentIndex];
-  document.getElementById('traitBadge').textContent = trait.name;
-  document.getElementById('questionText').textContent = trait.question;
-  document.getElementById('currentNum').textContent = currentIndex + 1;
-  document.getElementById('progressBar').style.width = ((currentIndex + 1) / 8 * 100) + '%';
+  const q = QUESTIONS[currentIndex];
+  const trait = TRAITS.find((t) => t.id === q.traitId) || {};
+  document.getElementById('traitBadge').textContent = trait.traitHeading || trait.name || q.traitId;
+  document.getElementById('questionText').textContent = q.prompt;
+  document.getElementById('leftAnchor').textContent = q.leftAnchor || '';
+  document.getElementById('rightAnchor').textContent = q.rightAnchor || '';
+  document.getElementById('currentNum').textContent = String(currentIndex + 1);
+  document.getElementById('progressBar').style.width = (((currentIndex + 1) / TOTAL) * 100) + '%';
+  const answeredCount = Object.values(answers).filter((v) => v !== null).length;
+  document.getElementById('answeredCount').textContent = String(answeredCount);
 
-  const answeredCount = Object.values(answers).filter(v => v !== null).length;
-  document.getElementById('answeredCount').textContent = answeredCount;
-
-  // Render options
   const container = document.getElementById('optionsContainer');
   container.innerHTML = '';
-
-  trait.options.forEach(opt => {
+  (q.options || []).forEach((label, idx) => {
+    const value = idx + 1;
     const div = document.createElement('div');
-    div.className = 'option' + (answers[trait.id] === opt.value ? ' selected' : '');
-    div.innerHTML = `
-      <div class="option-num">${opt.value}</div>
-      <div class="option-content">
-        <div class="option-label">${opt.label}</div>
-        <div class="option-desc">${opt.desc}</div>
-      </div>
-    `;
-    div.onclick = () => selectOption(opt.value);
+    div.className = 'option' + (answers[q.id] === value ? ' selected' : '');
+    div.innerHTML = '<div class="option-num">' + value + '</div><div class="option-content"><div class="option-label">' + label + '</div></div>';
+    div.onclick = () => selectOption(value);
     container.appendChild(div);
   });
 
-  // Update buttons
   document.getElementById('prevBtn').disabled = currentIndex === 0;
-
   const nextBtn = document.getElementById('nextBtn');
-  if (currentIndex === 7) {
+  if (currentIndex === TOTAL - 1) {
     nextBtn.textContent = 'Submit';
     nextBtn.className = 'btn btn-submit';
     nextBtn.onclick = submitForm;
@@ -335,91 +208,55 @@ function renderQuestion() {
     nextBtn.className = 'btn btn-next';
     nextBtn.onclick = goNext;
   }
-
-  updateDots();
 }
 
-// Render dots
-function renderDots() {
-  const container = document.getElementById('dotsContainer');
-  container.innerHTML = '';
-  for (let i = 0; i < 8; i++) {
-    const dot = document.createElement('button');
-    dot.className = 'dot';
-    dot.onclick = () => goToQuestion(i);
-    container.appendChild(dot);
-  }
-  updateDots();
-}
-
-// Update dots
-function updateDots() {
-  const dots = document.querySelectorAll('.dot');
-  dots.forEach((dot, i) => {
-    dot.className = 'dot';
-    if (i === currentIndex) dot.classList.add('active');
-    if (answers[TRAITS[i].id] !== null) dot.classList.add('answered');
-  });
-}
-
-// Select option
 function selectOption(value) {
-  answers[TRAITS[currentIndex].id] = value;
+  answers[QUESTIONS[currentIndex].id] = value;
   renderQuestion();
 }
 
-// Navigation
 function goPrev() {
   if (currentIndex > 0) {
     currentIndex--;
     renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 
 function goNext() {
-  if (answers[TRAITS[currentIndex].id] === null) {
+  if (answers[QUESTIONS[currentIndex].id] === null) {
     alert('Please select an option before continuing.');
     return;
   }
-  if (currentIndex < 7) {
+  if (currentIndex < TOTAL - 1) {
     currentIndex++;
     renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
 
-function goToQuestion(index) {
-  currentIndex = index;
-  renderQuestion();
-}
-
-// Submit form to backend
 async function submitForm() {
-  const unanswered = Object.values(answers).filter(v => v === null);
-  if (unanswered.length > 0) {
-    alert('Please answer all 8 questions before submitting.');
+  if (Object.values(answers).some((v) => v === null)) {
+    alert('Please answer all ' + TOTAL + ' questions before submitting.');
     return;
   }
-
   const nextBtn = document.getElementById('nextBtn');
   nextBtn.disabled = true;
   nextBtn.textContent = 'Submitting...';
-
   try {
-    const response = await fetch(`${API_URL}/api/v1/compatibility/submit-partner`, {
+    const response = await fetch(API_URL + '/api/v1/compatibility/submit-partner', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: inviteId,
-        answers: answers
-      })
+      body: JSON.stringify({ id: inviteId, itemAnswers: answers })
     });
-
     const data = await response.json();
-
     if (!data.error) {
       showScreen('successScreen');
     } else {
-      alert(data.message || 'Failed to submit. Please try again.');
+      const msg = typeof data.message === 'string'
+        ? data.message
+        : (data.message && JSON.stringify(data.message)) || 'Failed to submit. Please try again.';
+      alert(msg);
       nextBtn.disabled = false;
       nextBtn.textContent = 'Submit';
     }
@@ -431,12 +268,8 @@ async function submitForm() {
   }
 }
 
-// Event listeners
 document.getElementById('prevBtn').onclick = goPrev;
-
-// Initialize - load data from backend
 loadInviteData();
-</script>
-
+  </script>
 </body>
 </html>

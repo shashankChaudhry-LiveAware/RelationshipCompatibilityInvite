@@ -1,0 +1,3 @@
+# Generated helpers — keep in repo for regenerate workflow
+# (index.html is the deployed artifact)
+.DS_Store
