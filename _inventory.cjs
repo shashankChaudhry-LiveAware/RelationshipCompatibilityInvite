@@ -1,3 +1,4 @@
+/** Synced from Mobile PersonalityMappingData.js — run: node sync-inventory.js */
 const PERSONALITY_TRAITS = [
    { id: 't1', traitHeading: 'T1 — Structure & Flexibility', name: 'Structure & Flexibility', leftLabel: 'Order & Planning', rightLabel: 'Spontaneity & Adaptability' },
    { id: 't2', traitHeading: 'T2 — Social Energy', name: 'Social Energy', leftLabel: 'Solitude Recharge', rightLabel: 'People Recharge' },
@@ -12,7 +13,6 @@ const PERSONALITY_TRAITS = [
    { id: 't11', traitHeading: 'T11 — Autonomy Preference', name: 'Autonomy Preference', leftLabel: 'Guidance & Structure', rightLabel: 'Independence & Ownership' },
 ];
 
-// 44 deterministic items (11 traits × 4). Each item uses the same 1..7 scale.
 const PERSONALITY_QUESTIONS = [
    { id: 't1_q1', traitId: 't1', domain: 'general', prompt: 'Over a typical week, your approach is…', leftAnchor: 'Plan everything ahead and follow a clear routine', rightAnchor: 'Keep everything open, decide in the moment', options: ['Plan everything ahead and follow a clear routine', 'Plan most things and keep small flexibility', 'Plan key parts, adjust smaller details', 'Balance planning and flexibility equally', 'Keep a loose plan, adapt often', 'Decide as things unfold, minimal planning', 'Keep everything open, decide in the moment'] },
    { id: 't1_q2', traitId: 't1', domain: 'general', prompt: 'When plans change unexpectedly, you…', leftAnchor: 'Re-plan quickly to restore structure', rightAnchor: 'Enjoy change and feel energized by it', options: ['Re-plan quickly to restore structure', 'Try to return to original plan', 'Adjust, but prefer stability', 'Adjust based on situation and importance', 'Adapt without much stress', 'Shift quickly and stay comfortable', 'Enjoy change and feel energized by it'] },
@@ -70,5 +70,4 @@ const PERSONALITY_QUESTIONS = [
    { id: 't11_q4', traitId: 't11', domain: 'general', prompt: 'When facing challenges, you usually…', leftAnchor: 'Seek help immediately', rightAnchor: 'Rely on yourself before seeking help', options: ['Seek help immediately', 'Prefer guidance before acting', 'Ask for help when needed', 'Balance self-effort and support', 'Try solving independently first', 'Prefer solving on your own', 'Rely on yourself before seeking help'] },
 ];
 
-
-module.exports={PERSONALITY_TRAITS,PERSONALITY_QUESTIONS};
+module.exports = { PERSONALITY_TRAITS, PERSONALITY_QUESTIONS };

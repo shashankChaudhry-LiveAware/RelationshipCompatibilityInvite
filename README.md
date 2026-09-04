@@ -1,26 +1,22 @@
-# Door A — Fit-only Personality Compatibility web form (email / WhatsApp link).
+# Door A — Compatibility Check web form (Fit only · email / WhatsApp link)
 
-> **Hosting cutover (2026-09-03):** Canonical production host is moving to  
-> `https://www.liveaware.in/compatibility?id={inviteId}`  
-> Keep this Vercel project live until redirects + Backend env flip are done.
+> **Flip (2026-09-04):** Canonical host is `https://www.liveaware.in/compatibility?id={inviteId}`.  
+> This Vercel project **stays** — it redirects to liveaware.in. Do **not** delete the repo or Vercel project yet.
 
-## Production URL (current / legacy)
+## Production URL
 
-`https://relationship-compatibility-invite.vercel.app`
+| Role | URL |
+|------|-----|
+| **Canonical (new invites)** | `https://www.liveaware.in/compatibility` |
+| **Legacy host (kept; redirects)** | `https://relationship-compatibility-invite.vercel.app` |
 
-Backend (until flip):
-
-```
-COMPATIBILITY_CLIENT_BASE_URL=https://relationship-compatibility-invite.vercel.app
-```
-
-After LiveAware.in `/compatibility` is verified in production:
+Backend / AWS (flip):
 
 ```
 COMPATIBILITY_CLIENT_BASE_URL=https://www.liveaware.in/compatibility
 ```
 
-Then enable `vercel.json` redirects in this repo (see below), keep CORS for this origin during the window, then archive.
+Keep `https://relationship-compatibility-invite.vercel.app` in Backend CORS.
 
 ## Contract (must stay in sync with Mobile)
 
@@ -31,23 +27,13 @@ Then enable `vercel.json` redirects in this repo (see below), keep CORS for this
 | Submit | `POST /api/v1/compatibility/submit-partner` `{ id, itemAnswers }` |
 | API | `https://be.liveaware.in` |
 
-Legacy 8-trait `answers`-only submit is **retired**.
+## Regenerate inventory (Liveaware.in is SoT for the live form)
 
-## Regenerate after Personality Type inventory change
+```bash
+node sync-inventory.js   # Mobile → _inventory.cjs + Liveaware.in JSON
+node build-index.js      # rebuild index.html (local preview / rollback)
+```
 
-1. Refresh `_inventory.cjs` from Mobile `PersonalityMappingData.js` (strip `export` → CommonJS).
-2. `node build-index.js`
-3. Also refresh `Liveaware.in/src/lib/compatibility-inventory.json` from this inventory.
-4. Commit + push (Vercel static deploy while this host is still live).
+## Do not delete yet
 
-## Safe cutover order (do not skip)
-
-1. Deploy LiveAware.in with `/compatibility`.
-2. Smoke: open `https://www.liveaware.in/compatibility?id=<pendingInviteId>` → submit.
-3. Flip Backend `COMPATIBILITY_CLIENT_BASE_URL` to liveaware.in path.
-4. Enable redirects in `vercel.json` (uncomment / deploy this file’s redirects).
-5. Wait 30–90 days → remove CORS origin → archive this repo.
-
-## Local preview
-
-Open `index.html` via a static server with `?id=<pendingInviteId>` against prod or local API (update `API_URL` in generated HTML for local).
+Leave this GitHub repo + Vercel project up with redirects. Archive only later if you explicitly choose to retire the legacy host.
